@@ -5,7 +5,7 @@
 
 *A simple variation of Pong, written in C++ using the [raylib](https://www.raylib.com/) library.*
 
-![Example](https://cdn.discordapp.com/attachments/770719921972969482/1048187973704888352/image.png)
+https://user-images.githubusercontent.com/107510599/205287953-1c37d561-b2fd-49ed-b2a4-0d07610022c3.mp4
 
 #### Controls
 - `W/S` for left wall.
