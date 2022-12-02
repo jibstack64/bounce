@@ -64,14 +64,14 @@ struct object {
 // a glob containing all game objects
 std::vector<object*> objectGlob;
 
-int main() {
+int main(int argc, char ** argv) {
     const int screenWidth = 750;
     const int screenHeight = 750;
     const int move = 10;
-    const int speed = 3;
     const float gravity = 9.8;
     const int fps = 60;
     const char * title = "Bounce";
+    int speed = argc > 1 ? atoi(argv[1]) : 6; // increases every point scored
 
     InitWindow(screenWidth, screenHeight, title);
     InitAudioDevice();
@@ -153,6 +153,8 @@ int main() {
             srand(time(0));
             blmv.x = (rand() / RAND_MAX) > 0.5 ? speed : -speed;
             blmv.y = 0;
+            // increase speed
+            speed++;
         }
 
         // begin drawing and ensure the background is black
