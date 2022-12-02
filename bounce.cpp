@@ -55,6 +55,17 @@ struct object {
         }
     }
 
+    // returns the angle after the collision between this and object.
+    float angleOff(object* object, bool d = false) {
+        vector* locTouch = touching(*object);
+        float distanceY = static_cast<int>((object->location.y + (object->height / 2)) - locTouch->y);
+        float angle = ((distanceY) / (object->height / 2)); // how close to the center of the object
+        if (d) {
+            delete object;
+        }
+        return angle;
+    }
+
     object(int width, int height, objectType type, int x = 0, int y = 0) : width(width), height(height),
             type(type), location(x, y) {}
     object(int width, int height, objectType type, vector location = vector(0, 0)) : width(width), height(height),
@@ -72,6 +83,13 @@ int main(int argc, char ** argv) {
     const int fps = 60;
     const char * title = "Bounce";
     int speed = argc > 1 ? atoi(argv[1]) : 6; // increases every point scored
+    if (speed > 13) {
+        std::cout << "Speed cannot be above 13." << std::endl;
+        return 1;
+    } else if (speed <= 0) {
+        std::cout << "Speed must be above 0." << std::endl;
+        return 1;
+    }
 
     InitWindow(screenWidth, screenHeight, title);
     InitAudioDevice();
@@ -92,6 +110,9 @@ int main(int argc, char ** argv) {
     int player1Score = 0;
     int player2Score = 0;
 
+    // a pointer to the object in which was last touched by the ball
+    object* lastTouch;
+
     // vector in which the ball is moved by
     vector blmv(speed, 0);
 
@@ -111,12 +132,10 @@ int main(int argc, char ** argv) {
         if (locTouch != nullptr) {
             // play hit sound
             PlaySound(hit);
-            float distanceY = static_cast<int>((touchedWall->location.y + (touchedWall->height / 2)) - locTouch->y);
-            //std::cout << distanceY << std::endl;
-            float angle = ((distanceY) / (touchedWall->height / 2)); // how close to the center of the wall
-            blmv.y = round((speed / 2) * angle);
+            blmv.y = round((speed / 2) * ball.angleOff(touchedWall));
             //std::cout << blmv.y << std::endl;
             blmv.x = -blmv.x;
+            lastTouch = touchedWall;
         }
 
         // move the walls down/up
@@ -140,21 +159,32 @@ int main(int argc, char ** argv) {
         // move the ball
         bool success = ball.move(blmv);
         if (!success) {
-            // someone has scored a point
-            if (ball.location.x < screenWidth/2) {
-                player2Score++;
+            // if the ball has been touched
+            if (lastTouch != nullptr) {
+                // someone has scored a point
+                if (lastTouch == &rightWall) {
+                    player2Score++;
+                } else {
+                    player1Score++;
+                }
+                // play sound
+                PlaySound(lose);
+                // reset the locations of the balls and move factor of the balls
+                ball.location = vector(screenWidth/2, screenHeight/2);
+                srand(time(0));
+                blmv.x = (rand() / RAND_MAX) > 0.5 ? speed : -speed;
+                blmv.y = 0;
+                // increase speed
+                if (speed < 13) {
+                    speed++;
+                }
+                lastTouch = nullptr;
             } else {
-                player1Score++;
+                // same as when hitting wall but only flip
+                // play hit sound
+                PlaySound(hit);
+                blmv.x = -blmv.x;
             }
-            // play sound
-            PlaySound(lose);
-            // reset the locations of the balls and move factor of the balls
-            ball.location = vector(screenWidth/2, screenHeight/2);
-            srand(time(0));
-            blmv.x = (rand() / RAND_MAX) > 0.5 ? speed : -speed;
-            blmv.y = 0;
-            // increase speed
-            speed++;
         }
 
         // begin drawing and ensure the background is black
