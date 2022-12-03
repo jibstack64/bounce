@@ -1,1 +1,1 @@
-g++ -lraylib -lGL -lopenal -lm -pthread -ldl bounce.cpp -o bounce
+g++ -lraylib -lGL -lm -pthread -ldl bounce.cpp -o bounce
