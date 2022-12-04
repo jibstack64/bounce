@@ -83,10 +83,7 @@ int main(int argc, char ** argv) {
     const int fps = 60;
     const char * title = "Bounce";
     int speed = argc > 1 ? atoi(argv[1]) : 6; // increases every point scored
-    if (speed > 13) {
-        std::cout << "Speed cannot be above 13." << std::endl;
-        return 1;
-    } else if (speed <= 0) {
+    if (speed <= 0) {
         std::cout << "Speed must be above 0." << std::endl;
         return 1;
     }
