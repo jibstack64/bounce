@@ -1,0 +1,1 @@
+x86_64-w64-mingw32-g++ -lraylib -lm -pthread bounce.cpp -o bounce.exe
